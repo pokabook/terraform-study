@@ -286,9 +286,9 @@ resource "aws_security_group" "sbcntr_sg_front_container" {
 resource "aws_security_group_rule" "sbcntr_sg_front_container_egress" {
   security_group_id = aws_security_group.sbcntr_sg_front_container.id
 
-  from_port = local.any_port
-  protocol  = local.any_protocol
-  to_port   = local.any_port
+  from_port   = local.any_port
+  protocol    = local.any_protocol
+  to_port     = local.any_port
   cidr_blocks = local.all_ips
 
   type = "egress"
@@ -304,9 +304,9 @@ resource "aws_security_group" "sbcntr_sg_internal" {
 resource "aws_security_group_rule" "sbcntr_sg_internal_egress" {
   security_group_id = aws_security_group.sbcntr_sg_internal.id
 
-  from_port = local.any_port
-  protocol  = local.any_protocol
-  to_port   = local.any_port
+  from_port   = local.any_port
+  protocol    = local.any_protocol
+  to_port     = local.any_port
   cidr_blocks = local.all_ips
 
   type = "egress"
@@ -322,9 +322,9 @@ resource "aws_security_group" "sbcntr_sg_db" {
 resource "aws_security_group_rule" "sbcntr_sg_db_egress" {
   security_group_id = aws_security_group.sbcntr_sg_db.id
 
-  from_port = local.any_port
-  protocol  = local.any_protocol
-  to_port   = local.any_port
+  from_port   = local.any_port
+  protocol    = local.any_protocol
+  to_port     = local.any_port
   cidr_blocks = local.all_ips
 
   type = "egress"
@@ -405,4 +405,81 @@ resource "aws_security_group_rule" "sbcntr_sg_internal_from_sg_management_TCP" {
   to_port   = local.http_port
 
   type = "ingress"
+}
+
+resource "aws_subnet" "sbcntr_subnet_private_egress_1a" {
+  vpc_id = aws_vpc.sbcntr_vpc.id
+
+  availability_zone       = local.azs[0]
+  map_public_ip_on_launch = false
+  cidr_block              = "10.0.248.0/24"
+
+  tags = {
+    Name = "sbcntr-subnet-private-egress-1a"
+    Type = "Isolated"
+  }
+}
+
+resource "aws_subnet" "sbcntr_subnet_private_egress_1c" {
+  vpc_id = aws_vpc.sbcntr_vpc.id
+
+  availability_zone       = local.azs[1]
+  map_public_ip_on_launch = false
+  cidr_block              = "10.0.249.0/24"
+
+  tags = {
+    Name = "sbcntr-subnet-private-egress-1c"
+    Type = "Isolated"
+  }
+}
+
+resource "aws_security_group" "sbcntr_sg_egress" {
+  vpc_id = aws_vpc.sbcntr_vpc.id
+  tags = {
+    Name = "sbcntr-sg-vpce"
+  }
+}
+
+resource "aws_security_group_rule" "sbcntr_sg_egress_egress" {
+  security_group_id = aws_security_group.sbcntr_sg_egress.id
+
+  from_port   = local.any_port
+  protocol    = local.any_protocol
+  to_port     = local.any_port
+  cidr_blocks = local.all_ips
+
+  type = "egress"
+}
+
+resource "aws_security_group_rule" "sbcntr_sg_vpce_from_sg_container_TCP" {
+  security_group_id = aws_security_group.sbcntr_sg_egress.id
+  source_security_group_id = aws_security_group.sbcntr_sg_container.id
+
+  from_port         = local.https_port
+  protocol          = local.tcp_protocol
+  to_port           = local.https_port
+
+  type              = "ingress"
+}
+
+resource "aws_security_group_rule" "sbcntr_sg_vpce_from_sg_front_container_TCP" {
+  security_group_id = aws_security_group.sbcntr_sg_egress.id
+  source_security_group_id = aws_security_group.sbcntr_sg_front_container.id
+
+  from_port         = local.https_port
+  protocol          = local.tcp_protocol
+  to_port           = local.https_port
+
+  type              = "ingress"
+}
+
+resource "aws_security_group_rule" "sbcntr_sg_vpce_from_sg_management_TCP" {
+  security_group_id = aws_security_group.sbcntr_sg_egress.id
+  source_security_group_id = aws_security_group.sbcntr_sg_management.id
+
+  from_port         = local.https_port
+  protocol          = local.tcp_protocol
+  to_port           = local.https_port
+
+  type              = "ingress"
 }

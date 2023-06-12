@@ -7,6 +7,7 @@ locals {
 
 locals {
   http_port    = 80
+  https_port   = 443
   mysql_port   = 3306
   any_port     = 0
   tcp_protocol = "tcp"
