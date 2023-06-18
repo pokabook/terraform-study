@@ -50,7 +50,7 @@ module "eks" {
   aws_auth_users = [
     {
       userarn  = data.aws_caller_identity.current.arn
-      username = "tf-iam"
+      username = local.current_username
       groups   = ["system:masters"]
     }
   ]
