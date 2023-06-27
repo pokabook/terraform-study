@@ -52,6 +52,11 @@ module "eks" {
       userarn  = data.aws_caller_identity.current.arn
       username = local.current_username
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = var.userarn
+      username = var.username
+      groups   = ["system:masters"]
     }
   ]
 
