@@ -30,7 +30,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     initial = {
-      instance_types         = ["t3.large"]
+      instance_types         = ["t3.medium"]
       create_security_group  = false
       create_launch_template = false
       launch_template_name   = ""
