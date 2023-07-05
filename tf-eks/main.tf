@@ -14,3 +14,12 @@ module "eks" {
   private_subnets = module.vpc.private_subnet_ids
   public_subnets  = module.vpc.public_subnet_ids
 }
+/*
+
+module "ecr" {
+  source = "./modules/ecr"
+  name = "${var.name}-ecr"
+}
+*/
+
+
