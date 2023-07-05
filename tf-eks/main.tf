@@ -14,12 +14,19 @@ module "eks" {
   private_subnets = module.vpc.private_subnet_ids
   public_subnets  = module.vpc.public_subnet_ids
 }
-/*
 
-module "ecr" {
-  source = "./modules/ecr"
-  name = "${var.name}-ecr"
+module "karpenter" {
+  source                  = "./modules/karpenter"
+  cluster_name            = module.eks.cluster_name
+  node_group_iam_role_arn = module.eks.node_group_iam_role_arn
+  oidc_provider_arn       = module.eks.oidc_provider_arn
 }
-*/
+
+module "csi-driver" {
+  source        = "./modules/csi-driver"
+  oidc_provider = module.eks.oidc_provider
+}
+
+
 
 
