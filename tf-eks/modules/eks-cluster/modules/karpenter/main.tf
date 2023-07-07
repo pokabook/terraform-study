@@ -14,19 +14,19 @@ resource "helm_release" "karpenter" {
 
   name  = "karpenter"
   repository          = "oci://public.ecr.aws/karpenter"
-  repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-  repository_password = data.aws_ecrpublic_authorization_token.token.password
+  repository_username = var.aws_ecrpublic_authorization_token_user_name
+  repository_password = var.aws_ecrpublic_authorization_token_passwprd
   chart               = "karpenter"
   version             = "v0.20.0"
 
   set {
     name  = "settings.aws.clusterName"
-    value = module.eks.cluster_name
+    value = var.cluster_name
   }
 
   set {
     name  = "settings.aws.clusterEndpoint"
-    value = module.eks.cluster_endpoint
+    value = var.cluster_endpoint
   }
 
   set {

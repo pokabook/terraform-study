@@ -87,3 +87,24 @@ resource "aws_ec2_tag" "public_subnet_tag" {
   key         = "kubernetes.io/role/elb"
   value       = "1"
 }
+
+module "karpenter" {
+  source                                      = "./modules/karpenter"
+  cluster_name                                = module.eks.cluster_name
+  node_group_iam_role_arn                     = module.eks.node_security_group_arn
+  oidc_provider_arn                           = module.eks.oidc_provider_arn
+  cluster_endpoint                            = module.eks.cluster_endpoint
+  aws_ecrpublic_authorization_token_user_name = data.aws_ecrpublic_authorization_token.token.user_name
+  aws_ecrpublic_authorization_token_passwprd  = data.aws_ecrpublic_authorization_token.token.password
+}
+
+module "csi-driver" {
+  source        = "./modules/csi-driver"
+  oidc_provider = module.eks.oidc_provider
+}
+
+module "alb_controller_role" {
+  source          = "./modules/iam"
+  cluster_name    = module.eks.cluster_name
+  oidc_issuer_url = module.eks.cluster_oidc_issuer_url
+}
