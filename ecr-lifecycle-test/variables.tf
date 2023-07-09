@@ -1,6 +1,12 @@
-variable "tag_prefix_list" {
-  type = list(string)
+variable "name_prefix" {
+  type = string
+  default = "test"
 }
-variable "image_count" {
-  type = number
+variable "tag_prefix_list" {
+  type    = list(string)
+  default = ["v"]
+}
+variable "image_limit" {
+  type    = number
+  default = 3
 }

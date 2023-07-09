@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "test" {
-  name                 = "test-repo"
+  name                 = "${var.name_prefix}-ecr"
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -10,25 +10,23 @@ resource "aws_ecr_repository" "test" {
 resource "aws_ecr_lifecycle_policy" "test-policy" {
   repository = aws_ecr_repository.test.name
 
-  policy = <<EOF
-{
-    "rules": [
-        {
-            "rulePriority": 1,
-            "description": "Keep last 3 images",
-            "selection": {
-                "tagStatus": "tagged",
-                "tagPrefixList": ${var.tag_prefix_list},
-                "countType": "imageCountMoreThan",
-                "countNumber": ${var.image_count}
-            },
-            "action": {
-                "type": "expire"
-            }
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep last ${var.image_limit} images"
+        selection = {
+          tagStatus     = "tagged"
+          tagPrefixList = var.tag_prefix_list
+          countType     = "imageCountMoreThan"
+          countNumber   = var.image_limit
         }
+        action = {
+          type = "expire"
+        }
+      }
     ]
-}
-EOF
+  })
 
 }
 
