@@ -11,6 +11,6 @@ module "iam_assumable_role_alb_controller" {
 
 resource "aws_iam_role_policy" "controller" {
   name_prefix = "AWSLoadBalancerControllerIAMPolicy"
-  policy      = data.http.iam_policy.body
+  policy      = data.aws_iam_policy_document.aws_lb.json
   role        = module.iam_assumable_role_alb_controller.iam_role_name
 }

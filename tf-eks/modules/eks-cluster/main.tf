@@ -89,13 +89,13 @@ resource "aws_ec2_tag" "public_subnet_tag" {
 }
 
 module "karpenter" {
-  source                                      = "./modules/karpenter"
-  cluster_name                                = module.eks.cluster_name
-  node_group_iam_role_arn                     = module.eks.node_security_group_arn
-  oidc_provider_arn                           = module.eks.oidc_provider_arn
-  cluster_endpoint                            = module.eks.cluster_endpoint
-  aws_ecrpublic_authorization_token_user_name = data.aws_ecrpublic_authorization_token.token.user_name
-  aws_ecrpublic_authorization_token_passwprd  = data.aws_ecrpublic_authorization_token.token.password
+  source                 = "./modules/karpenter"
+  cluster_name           = module.eks.cluster_name
+  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+  iam_role_arn           = module.eks.eks_managed_node_groups["initial"].iam_role_arn
+  cluster_endpoint       = module.eks.cluster_endpoint
+  repository_username    = data.aws_ecrpublic_authorization_token.token.user_name
+  repository_password    = data.aws_ecrpublic_authorization_token.token.password
 }
 
 module "csi-driver" {
