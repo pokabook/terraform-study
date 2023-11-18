@@ -24,12 +24,11 @@ resource "aws_security_group" "flask_sg" {
     cidr_blocks = [local.myip]
   }
   ingress {
-    from_port = 22
-    to_port   = 22
+    from_port = 4272
+    to_port   = 4272
     protocol  = "tcp"
-    cidr_blocks = [local.myip]
+    cidr_blocks = ["0.0.0.0/0"]
   }
-
   egress {
     from_port = 0
     to_port   = 0
